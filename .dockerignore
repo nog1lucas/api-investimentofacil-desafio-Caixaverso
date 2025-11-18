@@ -1,5 +1,32 @@
-*
-!target/*-runner
-!target/*-runner.jar
-!target/lib/*
-!target/quarkus-app/*
+# Artefatos de build
+target/
+
+# Git
+.git/
+.gitignore
+
+# Logs e dados
+logs/
+data/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# OS e temporários
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.log
+
+# Arquivos de configuração do Docker
+docker-compose.yml
+Dockerfile
+
+# Incluir .env para docker-compose
+!.env
+
+# Incluir Maven wrapper e configuração
+!.mvn/
