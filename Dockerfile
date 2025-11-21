@@ -1,11 +1,11 @@
 # Etapa de build
-FROM maven:3.9.4-eclipse-temurin-17-alpine AS build
+FROM maven:3.9.4-eclipse-temurin-21-alpine AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests -Dquarkus.package.type=uber-jar
 
 # Etapa de runtime
-FROM eclipse-temurin:17-jdk-alpine
+FROM eclipse-temurin:21-jdk-alpine
 
 # Instala o tzdata e define o timezone
 RUN apk add --no-cache tzdata \
