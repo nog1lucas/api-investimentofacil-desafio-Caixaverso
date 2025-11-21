@@ -38,10 +38,8 @@ services:
     env_file:
       - .env
     depends_on:
-      smartinvest-db:
-        condition: service_healthy
-      keycloak:
-          condition: service_healthy
+      - smartinvest-db
+      - keycloak
     networks:
       - backend
 
