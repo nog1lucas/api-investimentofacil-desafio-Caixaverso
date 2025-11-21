@@ -10,12 +10,6 @@ services:
       - "5434:1433"
     networks:
       - backend
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U ${DB_USERNAME} -P ${DB_PASSWORD} -Q 'SELECT 1'"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
@@ -26,11 +20,6 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HEALTH_ENABLED: "true"
       KC_LOG_LEVEL: info
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7080/health/ready"]
-      interval: 15s
-      timeout: 2s
-      retries: 14
     command: ["start-dev", "--http-port", "7080", "--import-realm"]
     volumes:
       - ./docker/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
