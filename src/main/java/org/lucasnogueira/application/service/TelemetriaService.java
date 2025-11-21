@@ -10,6 +10,9 @@ import io.opentelemetry.api.common.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.context.ThreadContext;
+import org.lucasnogueira.adapters.outbound.dto.PeriodoDTO;
+import org.lucasnogueira.adapters.outbound.dto.TelemetriaResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.TelemetriaServicoDTO;
 import org.lucasnogueira.domain.telemetria.*;
 
 import java.math.BigDecimal;
@@ -74,7 +77,7 @@ public class TelemetriaService {
         atualizarCache(endpoint, durationMs, statusCode >= 200 && statusCode < 400);
 
         // Se for endpoint de simulação, persiste imediatamente de forma assíncrona
-        if (endpoint.contains("/simulacao")) {
+        if (endpoint.contains("/simulacoes")) {
             log.debug("Persistindo métricas de forma assíncrona após requisição de simulação: {}", endpoint);
             persistirCacheNoBancoAsync();
         }
@@ -187,7 +190,7 @@ public class TelemetriaService {
      * Salva ou atualiza uma métrica no banco de dados
      */
     private void salvarOuAtualizarMetrica(String endpoint, LocalDate data, EndpointMetrics metrics) {
-        Optional<Telemetria> metricaExistente = Optional.ofNullable(telemetriaRepository.buscarPorEndpointEData(endpoint, data));
+        Optional<Telemetria> metricaExistente = telemetriaRepository.buscarPorEndpointEData(endpoint, data);
 
         Telemetria telemetria;
         if (metricaExistente.isPresent()) {
@@ -222,10 +225,8 @@ public class TelemetriaService {
     public TelemetriaResponseDTO coletarMetricas(LocalDate dataInicio, LocalDate dataFim) {
         List<TelemetriaServicoDTO> endpoints = new ArrayList<>();
 
-        // Busca métricas do banco de dados
+        // Busca métricas de telemetria do banco de dados
         List<Telemetria> telemetrias = telemetriaRepository.buscarPorPeriodo(dataInicio, dataFim);
-
-        System.out.println(telemetrias);
 
         for (Telemetria telemetria : telemetrias) {
             if (telemetria.getQuantidadeChamadas() > 0) {

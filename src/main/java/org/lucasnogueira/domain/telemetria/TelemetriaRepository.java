@@ -2,10 +2,11 @@ package org.lucasnogueira.domain.telemetria;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface TelemetriaRepository {
 
-    Telemetria persist(Telemetria telemetria);
+    void persist(Telemetria telemetria);
 
     Telemetria findById(Long id);
 
@@ -15,5 +16,5 @@ public interface TelemetriaRepository {
 
     List<Telemetria> buscarPorPeriodo(LocalDate dataInicio, LocalDate dataFim);
 
-    Telemetria buscarPorEndpointEData(String endpoint, LocalDate dataReferencia);
+    Optional<Telemetria> buscarPorEndpointEData(String nomeEndpoint, LocalDate dataReferencia);
 }

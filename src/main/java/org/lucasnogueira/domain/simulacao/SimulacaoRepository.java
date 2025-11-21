@@ -1,5 +1,7 @@
 package org.lucasnogueira.domain.simulacao;
 
+import org.lucasnogueira.adapters.outbound.dto.HistoricoSimulacaoResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.ValoresSimuladosPorProdutoDiaDTO;
 import org.lucasnogueira.enums.TipoPerfilRisco;
 
 import java.util.List;
@@ -12,7 +14,7 @@ public interface SimulacaoRepository {
 
     List<Simulacao> findAll();
 
-    List<Simulacao> findAllPaged(int pagina, int tamanhoPagina);
+    List<HistoricoSimulacaoResponseDTO> listarSimulacoesPaginado(int pagina, int tamanhoPagina);
 
     long countAll();
 
@@ -20,5 +22,5 @@ public interface SimulacaoRepository {
 
     Object buscarPerfilPorCliente(Long clienteId);
 
-    Object listarProdutosRecomendados(TipoPerfilRisco tipoPerfilRisco);
+    Object buscaSimulacoesPorCliente(Long clienteId);
 }

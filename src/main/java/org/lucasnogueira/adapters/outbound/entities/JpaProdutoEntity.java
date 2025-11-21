@@ -2,7 +2,9 @@ package org.lucasnogueira.adapters.outbound.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import org.lucasnogueira.domain.produto.Produto;
+import org.lucasnogueira.enums.TipoPerfilRisco;
 
 import java.math.BigDecimal;
 
@@ -18,6 +20,10 @@ public class JpaProdutoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CO_PRODUTO")
     public Long id;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "IC_TIPO_PERFIL_RISCO")
+    private TipoPerfilRisco tipoPerfilRisco;
 
     @Column(name = "NO_PRODUTO", length = 100)
     public String nome;
@@ -56,5 +62,6 @@ public class JpaProdutoEntity {
         this.volumeMedioDiario = produto.getVolumeMedioDiario();
         this.emissor = produto.getEmissor();
         this.rating = produto.getRating();
+        this.risco = produto.getRisco();
     }
 }

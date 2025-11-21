@@ -1,7 +1,9 @@
 package org.lucasnogueira.domain.simulacao;
 
+import org.lucasnogueira.enums.TipoPerfilRisco;
+
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class Simulacao {
 
@@ -17,16 +19,16 @@ public class Simulacao {
 
     public Integer prazoMeses;
 
-    public LocalDateTime dataSimulacao;
+    public OffsetDateTime dataSimulacao;
 
     public Integer pontuacao;
 
-    public String perfilRisco;
+    public TipoPerfilRisco perfilRisco;
 
     public Simulacao() {
     }
 
-    public Simulacao(Integer codigoCliente, Long codigoProduto, LocalDateTime dataSimulacao, Long id, String perfilRisco, Integer pontuacao, Integer prazoMeses, BigDecimal valorFinal, BigDecimal valorInvestido) {
+    public Simulacao(Integer codigoCliente, Long codigoProduto, OffsetDateTime dataSimulacao, Long id, TipoPerfilRisco perfilRisco, Integer pontuacao, Integer prazoMeses, BigDecimal valorFinal, BigDecimal valorInvestido) {
         this.codigoCliente = codigoCliente;
         this.codigoProduto = codigoProduto;
         this.dataSimulacao = dataSimulacao;
@@ -54,11 +56,11 @@ public class Simulacao {
         this.codigoProduto = codigoProduto;
     }
 
-    public LocalDateTime getDataSimulacao() {
+    public OffsetDateTime getDataSimulacao() {
         return dataSimulacao;
     }
 
-    public void setDataSimulacao(LocalDateTime dataSimulacao) {
+    public void setDataSimulacao(OffsetDateTime dataSimulacao) {
         this.dataSimulacao = dataSimulacao;
     }
 
@@ -70,11 +72,11 @@ public class Simulacao {
         this.id = id;
     }
 
-    public String getPerfilRisco() {
+    public TipoPerfilRisco getPerfilRisco() {
         return perfilRisco;
     }
 
-    public void setPerfilRisco(String perfilRisco) {
+    public void setPerfilRisco(TipoPerfilRisco perfilRisco) {
         this.perfilRisco = perfilRisco;
     }
 

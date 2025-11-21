@@ -1,4 +1,4 @@
-package org.lucasnogueira.domain.simulacao;
+package org.lucasnogueira.adapters.outbound.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
@@ -6,8 +6,9 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.lucasnogueira.adapters.inbound.dto.ResultadoSimulacaoDTO;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * DTO para retorno da simulação de investimento
@@ -35,5 +36,5 @@ public class SimulacaoResponseDTO {
     @JsonProperty("dataSimulacao")
     @NotNull
     @Size(max = 200)
-    private LocalDateTime dataSimulacao;
+    private OffsetDateTime dataSimulacao;
 }

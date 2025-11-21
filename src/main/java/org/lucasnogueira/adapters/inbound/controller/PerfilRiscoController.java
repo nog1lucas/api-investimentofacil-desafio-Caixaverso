@@ -8,7 +8,6 @@ import io.opentelemetry.api.metrics.LongCounter;
 import io.opentelemetry.api.metrics.Meter;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -20,8 +19,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.lucasnogueira.application.service.PerfilRiscoServiceImpl;
 import org.lucasnogueira.application.service.TelemetriaService;
-import org.lucasnogueira.domain.simulacao.SimulacaoRequestDTO;
-import org.lucasnogueira.domain.simulacao.SimulacaoResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.SimulacaoResponseDTO;
 
 import java.util.concurrent.atomic.AtomicLong;
 

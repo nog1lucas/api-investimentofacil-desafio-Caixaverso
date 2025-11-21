@@ -1,15 +1,17 @@
 package org.lucasnogueira.adapters.outbound.repositories;
 
-import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.lucasnogueira.adapters.inbound.dto.PerfilRiscoResponseDto;
+import org.lucasnogueira.adapters.outbound.dto.HistoricoSimulacaoResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.ValoresSimuladosPorProdutoDiaDTO;
 import org.lucasnogueira.adapters.outbound.entities.JpaSimulacaoEntity;
-import org.lucasnogueira.domain.simulacao.Simulacao;
-import org.lucasnogueira.domain.simulacao.SimulacaoRepository;
-import org.lucasnogueira.domain.simulacao.ValoresSimuladosPorProdutoDiaDTO;
+import org.lucasnogueira.domain.simulacao.*;
 import org.lucasnogueira.enums.TipoPerfilRisco;
 import org.lucasnogueira.utils.mappers.SimulacaoMapper;
+import org.lucasnogueira.utils.mappers.SimulacaoResumoMapper;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,13 +43,21 @@ public class SimulacaoRepositoryImpl implements SimulacaoRepository {
     }
 
     @Override
-    public List<Simulacao> findAllPaged(int pagina, int tamanhoPagina) {
-        List<JpaSimulacaoEntity> entities = this.jpaSimulacaoRepository.findAll()
-                .page(Page.of(pagina, tamanhoPagina))
-                .list();
+    public List<HistoricoSimulacaoResponseDTO> listarSimulacoesPaginado(int pagina, int tamanhoPagina) {
+        List<Object[]> resultados = jpaSimulacaoRepository.getEntityManager()
+                .createQuery(
+                        "SELECT s.id, s.codigoCliente, p.nome, s.valorInvestido, s.valorFinal, s.prazoMeses, s.dataSimulacao " +
+                                "FROM JpaSimulacaoEntity s " +
+                                "JOIN JpaProdutoEntity p ON s.codigoProduto = p.id " +
+                                "ORDER BY s.dataSimulacao DESC",
+                        Object[].class
+                )
+                .setFirstResult(pagina * tamanhoPagina)
+                .setMaxResults(tamanhoPagina)
+                .getResultList();
 
-        return entities.stream()
-                .map(SimulacaoMapper.INSTANCE::jpaToDomain)
+        return resultados.stream()
+                .map(SimulacaoResumoMapper::fromObjectArray)
                 .collect(Collectors.toList());
     }
 
@@ -67,16 +77,17 @@ public class SimulacaoRepositoryImpl implements SimulacaoRepository {
         return resultados.stream()
                 .map(row -> new ValoresSimuladosPorProdutoDiaDTO(
                         (String) row[0],
-                        row[1].toString(),
+                        (OffsetDateTime) row[1],
                         ((Number) row[2]).intValue(),
                         new java.math.BigDecimal(row[3].toString())
                 ))
                 .collect(Collectors.toList());
     }
 
-    public Object[] buscarPerfilPorCliente(Long clienteId) {
-        return (Object[]) jpaSimulacaoRepository.getEntityManager().createQuery(
-                        "SELECT s.codigoCliente, s.perfilRisco, s.pontuacao " +
+    public PerfilRiscoResponseDto buscarPerfilPorCliente(Long clienteId) {
+        Object[] resultado = (Object[]) jpaSimulacaoRepository.getEntityManager()
+                .createQuery(
+                        "SELECT s.codigoCliente, s.perfilRisco, AVG(s.pontuacao) " +
                                 "FROM JpaSimulacaoEntity s " +
                                 "WHERE s.codigoCliente = :clienteId " +
                                 "ORDER BY s.dataSimulacao DESC"
@@ -84,19 +95,31 @@ public class SimulacaoRepositoryImpl implements SimulacaoRepository {
                 .setParameter("clienteId", clienteId)
                 .setMaxResults(1)
                 .getSingleResult();
+
+        Integer idCliente = ((Number) resultado[0]).intValue();
+        TipoPerfilRisco perfilRisco = (TipoPerfilRisco) resultado[1];
+        Double mediaPontuacao = (Double) resultado[2];
+
+        return new PerfilRiscoResponseDto(
+                idCliente,
+                perfilRisco.getNome(),
+                mediaPontuacao,
+                perfilRisco.getDescricao()
+        );
     }
 
-    public List<Object[]> listarProdutosRecomendados(TipoPerfilRisco tipoPerfilRisco) {
-        return jpaSimulacaoRepository.getEntityManager()
+    @Override
+    public Object buscaSimulacoesPorCliente(Long clienteId) {
+       return jpaSimulacaoRepository.getEntityManager()
                 .createQuery(
-                        "SELECT p.id, p.nome, p.tipo, p.taxaAnualOferecida, p.risco " +
+                        "SELECT s.id, p.tipo, s.valorFinal, p.taxaAnualOferecida, p.risco " +
                                 "FROM JpaSimulacaoEntity s " +
                                 "JOIN JpaProdutoEntity p ON s.codigoProduto = p.id " +
-                                "WHERE s.perfilRisco = :tipoPerfilRisco " +
-                                "ORDER BY p.nome ASC",
+                                "WHERE s.codigoCliente = :clienteId " +
+                                "ORDER BY s.dataSimulacao ASC",
                         Object[].class
                 )
-                .setParameter("tipoPerfilRisco", tipoPerfilRisco.name())
+                .setParameter("clienteId", clienteId)
                 .getResultList();
     }
 }

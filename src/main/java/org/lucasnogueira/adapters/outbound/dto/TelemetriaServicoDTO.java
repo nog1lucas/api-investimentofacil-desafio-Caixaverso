@@ -1,4 +1,4 @@
-package org.lucasnogueira.domain.telemetria;
+package org.lucasnogueira.adapters.outbound.dto;
 
 import lombok.*;
 

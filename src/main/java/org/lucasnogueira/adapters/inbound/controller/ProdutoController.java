@@ -17,11 +17,13 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.lucasnogueira.adapters.outbound.dto.ProdutoRecomendadoResponse;
 import org.lucasnogueira.application.service.ProdutoServiceImpl;
 import org.lucasnogueira.application.service.TelemetriaService;
-import org.lucasnogueira.domain.simulacao.SimulacaoResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.SimulacaoResponseDTO;
 import org.lucasnogueira.enums.TipoPerfilRisco;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -82,7 +84,7 @@ public class ProdutoController {
                     long success = successRequests.get();
                     double successRate = total > 0 ? (double) success / total * 100.0 : 0.0;
                     measurement.record(successRate, Attributes.of(
-                            ENDPOINT_KEY, "/api/simulacao/processar",
+                            ENDPOINT_KEY, "/api/produtos-recomendados",
                             METHOD_KEY, "POST"
                     ));
                 });
@@ -126,7 +128,7 @@ public class ProdutoController {
             // Converta o perfil para enum, se necessário
             TipoPerfilRisco perfilRisco = TipoPerfilRisco.valueOf(perfil.toUpperCase());
 
-            Object produtos = produtoServiceImpl.listarProdutosRecomendados(perfilRisco);
+            List<ProdutoRecomendadoResponse> produtos = produtoServiceImpl.listarProdutosRecomendadosPorPerfil(perfilRisco);
 
             // Incrementar contador de sucesso
             successRequests.incrementAndGet();

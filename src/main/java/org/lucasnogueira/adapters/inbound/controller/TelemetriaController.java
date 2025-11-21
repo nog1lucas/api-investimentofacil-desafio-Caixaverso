@@ -14,7 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.lucasnogueira.adapters.inbound.dto.HealthResponseDTO;
 import org.lucasnogueira.application.service.TelemetriaService;
-import org.lucasnogueira.domain.telemetria.TelemetriaResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.TelemetriaResponseDTO;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -63,14 +63,17 @@ public class TelemetriaController {
             )
             @QueryParam("dataInicio") String dataInicioParam,
             @Parameter(
-                    description = "Data Fim no formato yyyy-MM-dd (opcional, padrão: data atual)",
+                    description = "Data Fim no formato yyyy-MM-dd (opcional)",
                     example = "2024-01-15",
                     required = false
             )
             @QueryParam("dataFim") String dataFimParam) {
         try {
-            LocalDate dataInicio = parseData(dataInicioParam, LocalDate.now(), "dataInicio");
-            LocalDate dataFim = parseData(dataFimParam, null, "dataFim");
+            LocalDate dataInicio = parseData(dataInicioParam,"dataInicio");
+            if (dataInicio == null) {
+                dataInicio = LocalDate.now();
+            }
+            LocalDate dataFim = parseData(dataFimParam,"dataFim");
 
             TelemetriaResponseDTO telemetria = telemetriaService.coletarMetricas(dataInicio, dataFim);
             return Response.ok(telemetria).build();
@@ -125,9 +128,9 @@ public class TelemetriaController {
         }
     }
 
-    private LocalDate parseData(String dataParam, LocalDate defaultValue, String nomeCampo) {
+    private LocalDate parseData(String dataParam, String nomeCampo) {
         if (dataParam == null || dataParam.trim().isEmpty()) {
-            return defaultValue;
+            return null;
         }
         try {
             return LocalDate.parse(dataParam, DateTimeFormatter.ISO_LOCAL_DATE);

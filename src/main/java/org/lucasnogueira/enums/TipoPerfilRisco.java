@@ -9,8 +9,8 @@ public enum TipoPerfilRisco {
     MODERADO("Moderado", "Perfil de equilíbrio entre liquidez e rentabilidade"),
     AGRESSIVO("Agressivo", "Perfil de busca por alta rentabilidade, maior risco");
 
-    private final String nome;
-    private final String descricao;
+    private String nome;
+    private String descricao;
 
     TipoPerfilRisco(String nome, String descricao) {
         this.nome = nome;
@@ -23,10 +23,5 @@ public enum TipoPerfilRisco {
 
     public String getDescricao() {
         return descricao;
-    }
-
-    @Override
-    public String toString() {
-        return nome;
     }
 }

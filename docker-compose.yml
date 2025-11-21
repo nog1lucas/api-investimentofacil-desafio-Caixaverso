@@ -1,21 +1,19 @@
 version: "3.9"
 
 services:
-  sqlserver:
+  smartinvest-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: emprestimo-agora-db
+    container_name: smartinvest-db
     restart: always
     environment:
-      SA_PASSWORD: ${LOCAL_DB_USERNAME}
       ACCEPT_EULA: Y
-      POSTGRES_PASSWORD: ${LOCAL_DB_PASSWORD}
-      POSTGRES_DB: ${LOCAL_DB_NAME}
+      SA_PASSWORD: ${LOCAL_DB_PASSWORD}
     ports:
       - "5434:1433"
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${LOCAL_DB_USERNAME} -Q 'SELECT 1'"]
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${LOCAL_DB_PASSWORD} -Q 'SELECT 1'"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -27,8 +25,8 @@ services:
     restart: always
     command: start-dev
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     ports:
       - "8081:8080"
     networks:
@@ -36,13 +34,13 @@ services:
 
   app:
     build: .
-    container_name: api-emprestimo-agora
+    container_name: smartinvest-api
     ports:
       - "8080:8080"
     env_file:
       - .env
     depends_on:
-      emprestimo-agora-db:
+      smartinvest-db:
         condition: service_healthy
     networks:
       - backend

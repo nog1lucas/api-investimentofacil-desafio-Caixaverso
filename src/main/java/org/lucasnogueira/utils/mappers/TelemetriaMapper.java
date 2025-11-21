@@ -7,8 +7,9 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface TelemetriaMapper {
-
     TelemetriaMapper INSTANCE = Mappers.getMapper(TelemetriaMapper.class);
 
-    Telemetria jpaToDomain(JpaTelemetriaEntity jpa);
+    Telemetria jpaToDomain(JpaTelemetriaEntity entity);
+
+    JpaTelemetriaEntity domainToJpa(Telemetria telemetria);
 }

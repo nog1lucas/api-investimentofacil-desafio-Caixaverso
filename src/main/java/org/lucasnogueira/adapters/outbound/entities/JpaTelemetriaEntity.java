@@ -48,9 +48,11 @@ public class JpaTelemetriaEntity {
     @Column(name = "TS_ATUALIZACAO")
     private LocalDateTime tsAtualizacao;
 
+
     public JpaTelemetriaEntity(Telemetria telemetria) {
         this.id = telemetria.getId();
         this.nomeServico = telemetria.getNomeServico();
+        this.dataReferencia = telemetria.getDataReferencia();
         this.quantidadeChamadas = telemetria.getQuantidadeChamadas();
         this.quantidadeChamadasSucesso = telemetria.getQuantidadeChamadasSucesso();
         this.quantidadeChamadasErro = telemetria.getQuantidadeChamadasErro();

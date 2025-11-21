@@ -22,16 +22,19 @@ public class Produto {
 
     public String rating;
 
+    private String risco;
+
     public Produto() {
     }
 
-    public Produto(BigDecimal custoTransacaoPct, String emissor, Long id, Integer liquidezDias, String nome, String rating, BigDecimal taxaAnualOferecida, String tipo, Integer volumeMedioDiario) {
+    public Produto(BigDecimal custoTransacaoPct, String emissor, Long id, Integer liquidezDias, String nome, String rating, String risco, BigDecimal taxaAnualOferecida, String tipo, Integer volumeMedioDiario) {
         this.custoTransacaoPct = custoTransacaoPct;
         this.emissor = emissor;
         this.id = id;
         this.liquidezDias = liquidezDias;
         this.nome = nome;
         this.rating = rating;
+        this.risco = risco;
         this.taxaAnualOferecida = taxaAnualOferecida;
         this.tipo = tipo;
         this.volumeMedioDiario = volumeMedioDiario;
@@ -83,6 +86,14 @@ public class Produto {
 
     public void setRating(String rating) {
         this.rating = rating;
+    }
+
+    public String getRisco() {
+        return risco;
+    }
+
+    public void setRisco(String risco) {
+        this.risco = risco;
     }
 
     public BigDecimal getTaxaAnualOferecida() {

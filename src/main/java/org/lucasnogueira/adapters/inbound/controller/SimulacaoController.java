@@ -13,17 +13,13 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-import org.lucasnogueira.application.service.SimulacaoServiceImpl;
+import org.lucasnogueira.adapters.inbound.dto.SimulacaoRequestDTO;
 import org.lucasnogueira.application.service.TelemetriaService;
-import org.lucasnogueira.domain.simulacao.ListagemSimulacoesResponseDTO;
-import org.lucasnogueira.domain.simulacao.SimulacaoRequestDTO;
-import org.lucasnogueira.domain.simulacao.SimulacaoResponseDTO;
-import org.lucasnogueira.domain.simulacao.ValoresSimuladosPorProdutoDiaDTO;
-//import org.lucasnogueira.dto.HealthResponseDTO;
-//import org.lucasnogueira.domain.simulacao.SimulacaoRequestDTO;
-//import org.lucasnogueira.domain.simulacao.SimulacaoResponseDTO;
-//import org.lucasnogueira.infrastructure.config.exceptions.APIEmprestimoAgoraException;
-//import org.lucasnogueira.application.service.SimulacaoServiceImpl;
+import org.lucasnogueira.application.usecases.SimulacaoUseCases;
+import org.lucasnogueira.adapters.outbound.dto.ListagemSimulacoesResponseDTO;
+
+import org.lucasnogueira.adapters.outbound.dto.SimulacaoResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.ValoresSimuladosPorProdutoDiaDTO;
 
 // OpenTelemetry imports
 import io.opentelemetry.api.OpenTelemetry;
@@ -37,17 +33,17 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Controller REST para operações de simulação de investimento
+ * Controller REST para operações de simulação de investimentos
  */
 @Path("/api/simulacoes")
 @Slf4j
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "Simulação", description = "Operações de simulação de investimento")
+@Tag(name = "Simulação", description = "Operações de simulação de investimentos")
 public class SimulacaoController {
 
     @Inject
-    SimulacaoServiceImpl simulacaoServiceImpl;
+    SimulacaoUseCases simulacaoUseCases;
 
     @Inject
     OpenTelemetry openTelemetry;
@@ -70,7 +66,7 @@ public class SimulacaoController {
     @PostConstruct
     public void initMetrics() {
         // Criar meter
-        meter = openTelemetry.getMeter("investe-facil");
+        meter = openTelemetry.getMeter("smartInvest");
 
         // Histogram para duração das requisições (em segundos)
         httpServerDurationHistogram = meter
@@ -94,7 +90,7 @@ public class SimulacaoController {
                     long success = successRequests.get();
                     double successRate = total > 0 ? (double) success / total * 100.0 : 0.0;
                     measurement.record(successRate, Attributes.of(
-                            ENDPOINT_KEY, "/api/simulacao/processar",
+                            ENDPOINT_KEY, "/api/simulacoes/simular-investimento",
                             METHOD_KEY, "POST"
                     ));
                 });
@@ -103,7 +99,7 @@ public class SimulacaoController {
     @POST
     @Path("/simular-investimento")
     @Operation(
-            summary = "Processar simulação de investimento",
+            summary = "Processar simulação de investimentos",
             description = "Recebe solicitação de simulação, valida dados, calcula SCORE, persiste no banco de dados de forma síncrona e retorna resultados"
     )
     @APIResponse(
@@ -135,7 +131,7 @@ public class SimulacaoController {
         try {
             log.info(" [REQUISICAO][SIMULACAO] - Iniciando requisicao de simulacao: {}", requestDTO);
 
-            SimulacaoResponseDTO simulacao = simulacaoServiceImpl.simularInvestimento(requestDTO);
+            SimulacaoResponseDTO simulacao = simulacaoUseCases.simularInvestimento(requestDTO);
 
             // Incrementar contador de sucesso
             successRequests.incrementAndGet();
@@ -144,14 +140,9 @@ public class SimulacaoController {
             long durationNanos = System.nanoTime() - startTime;
             double durationSeconds = durationNanos / 1_000_000_000.0;
 
-            log.info(" [REQUISICAO][SIMULACAO] - Finalizando requisicao de simulacao em {}ms", Math.round(durationSeconds * 1000));
+            log.info("[REQUISICAO][SIMULACAO] - Finalizando requisicao de simulacao em {}ms", Math.round(durationSeconds * 1000));
 
             return Response.status(201).entity(simulacao).build();
-
-        /*} catch (APIEmprestimoAgoraException exception) {
-            log.warn("[REQUISICAO][SIMULACAO] - Erro na requisicao: {}", exception.getMessage());
-            status = "400";
-            throw exception;*/
 
         } catch (Exception e) {
             log.warn("[REQUISICAO][SIMULACAO] - Erro na requisicao: {}", e.getMessage());
@@ -165,7 +156,7 @@ public class SimulacaoController {
 
             // Criar atributos para classificação das métricas
             Attributes attributes = Attributes.of(
-                    ENDPOINT_KEY, "/api/simulacao/simular-investimento",
+                    ENDPOINT_KEY, "/api/simulacoes/simular-investimento",
                     METHOD_KEY, "POST",
                     STATUS_KEY, status
             );
@@ -177,7 +168,7 @@ public class SimulacaoController {
             httpServerRequestsCounter.add(1, attributes);
 
             // Registrar métricas no TelemetriaService para coleta posterior
-            telemetriaService.registrarRequisicao("/api/simulacao/simular-investimento", durationSeconds, Integer.parseInt(status));
+            telemetriaService.registrarRequisicao("/api/simulacoes/simular-investimento", durationSeconds, Integer.parseInt(status));
         }
     }
 
@@ -218,7 +209,7 @@ public class SimulacaoController {
         try {
             log.info("[REQUISICAO][BUSCA_SIMULACAO] - Buscando simulação com ID)");
 
-            ListagemSimulacoesResponseDTO simulacao = simulacaoServiceImpl.buscarHistoricoSimulacoes(pagina, tamanhoPagina);
+            ListagemSimulacoesResponseDTO simulacao = simulacaoUseCases.buscarHistoricoSimulacoes(pagina, tamanhoPagina);
 
             if (simulacao == null) {
                 status = "404";
@@ -244,14 +235,14 @@ public class SimulacaoController {
             double durationSeconds = (endTime - startTime) / 1_000_000_000.0;
 
 //            Attributes attributes = Attributes.of(
-//                ENDPOINT_KEY, "/api/simulacao/{id}",
+//                ENDPOINT_KEY, "/api/simulacoes/{id}",
 //                METHOD_KEY, "GET",
 //                STATUS_KEY, status
 //            );
 //
 //            httpServerDurationHistogram.record(durationSeconds, attributes);
 //            httpServerRequestsCounter.add(1, attributes);
-//            telemetriaService.registrarRequisicao("/api/simulacao/{id}", durationSeconds, Integer.parseInt(status));
+//            telemetriaService.registrarRequisicao("/api/simulacoes/{id}", durationSeconds, Integer.parseInt(status));
         }
     }
 
@@ -293,7 +284,7 @@ public class SimulacaoController {
         try {
             log.info("[REQUISICAO][BUSCA_SIMULACAO] - Buscando simulação com ID)");
 
-            List<ValoresSimuladosPorProdutoDiaDTO> simulacao = simulacaoServiceImpl.buscarValoresSimuladosPorProdutoEDia(pagina, tamanhoPagina);
+            List<ValoresSimuladosPorProdutoDiaDTO> simulacao = simulacaoUseCases.buscarValoresSimuladosPorProdutoEDia(pagina, tamanhoPagina);
 
             if (simulacao == null) {
                 status = "404";
@@ -319,14 +310,14 @@ public class SimulacaoController {
             double durationSeconds = (endTime - startTime) / 1_000_000_000.0;
 
 //            Attributes attributes = Attributes.of(
-//                ENDPOINT_KEY, "/api/simulacao/{id}",
+//                ENDPOINT_KEY, "/api/simulacoes/{id}",
 //                METHOD_KEY, "GET",
 //                STATUS_KEY, status
 //            );
 //
 //            httpServerDurationHistogram.record(durationSeconds, attributes);
 //            httpServerRequestsCounter.add(1, attributes);
-//            telemetriaService.registrarRequisicao("/api/simulacao/{id}", durationSeconds, Integer.parseInt(status));
+//            telemetriaService.registrarRequisicao("/api/simulacoes/{id}", durationSeconds, Integer.parseInt(status));
         }
     }
 

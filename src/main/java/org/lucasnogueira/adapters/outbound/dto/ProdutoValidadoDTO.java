@@ -1,4 +1,4 @@
-package org.lucasnogueira.domain.simulacao;
+package org.lucasnogueira.adapters.outbound.dto;
 
 import lombok.*;
 

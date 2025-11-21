@@ -4,14 +4,23 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.lucasnogueira.adapters.inbound.dto.SimulacaoRequestDTO;
+import org.lucasnogueira.adapters.outbound.cache.ProdutoCacheService;
+import org.lucasnogueira.adapters.outbound.dto.ProdutoValidadoDTO;
+import org.lucasnogueira.adapters.inbound.dto.ResultadoSimulacaoDTO;
+import org.lucasnogueira.adapters.outbound.dto.HistoricoSimulacaoResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.ListagemSimulacoesResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.SimulacaoResponseDTO;
+import org.lucasnogueira.adapters.outbound.dto.ValoresSimuladosPorProdutoDiaDTO;
 import org.lucasnogueira.application.usecases.SimulacaoUseCases;
 import org.lucasnogueira.domain.produto.Produto;
-import org.lucasnogueira.domain.produto.ProdutoRepository;
+import org.lucasnogueira.domain.produto.ProdutoComScore;
 import org.lucasnogueira.domain.simulacao.*;
 import org.lucasnogueira.enums.TipoPerfilRisco;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 /**
@@ -22,22 +31,48 @@ import java.util.*;
 public class SimulacaoServiceImpl implements SimulacaoUseCases {
 
     @Inject
-    ProdutoRepository produtoRepository;
+    ProdutoCacheService produtoCacheService;
 
     @Inject
     SimulacaoRepository simulacaoRepository;
 
-    private static final Map<String, Double> DEFAULT_BY_RATING = Map.of(
-            "AAA", 0.0001, "AA", 0.0005, "A", 0.001, "BBB", 0.005,
-            "BB", 0.02, "B", 0.05, "CCC", 0.15, "D", 1.0, "NR", 0.03
-    );
-
     @Transactional
     public SimulacaoResponseDTO simularInvestimento(SimulacaoRequestDTO requestDTO) {
-        int pontuacao = calcularPontuacao(requestDTO);
         TipoPerfilRisco perfil = calcularPerfil(requestDTO);
 
-        List<Produto> produtos = produtoRepository.findAll();
+        List<Produto> todosProdutos = produtoCacheService.findAllProdutos();
+        List<Produto> produtos = todosProdutos;
+
+        // Tentar filtrar por tipo se especificado
+        if (requestDTO.getTipoProduto() != null && !requestDTO.getTipoProduto().trim().isEmpty()) {
+            String tipoSolicitado = requestDTO.getTipoProduto().trim();
+
+            // Buscar tipo correspondente no banco (case-insensitive e parcial)
+            Optional<String> tipoEncontrado = produtoCacheService.findTiposDistintos()
+                    .stream()
+                    .filter(tipo -> tipo.toLowerCase().contains(tipoSolicitado.toLowerCase()) ||
+                            tipoSolicitado.toLowerCase().contains(tipo.toLowerCase()))
+                    .findFirst();
+
+            if (tipoEncontrado.isPresent()) {
+                String tipoValido = tipoEncontrado.get();
+
+                List<Produto> produtosFiltrados = todosProdutos.stream()
+                        .filter(p -> p.getTipo().equalsIgnoreCase(tipoValido))
+                        .toList();
+
+                // Só aplica o filtro se encontrar produtos do tipo
+                if (!produtosFiltrados.isEmpty()) {
+                    produtos = produtosFiltrados;
+                    log.info("Filtrado para {} produtos do tipo: {} (solicitado: {})",
+                            produtos.size(), tipoValido, tipoSolicitado);
+                } else {
+                    log.warn("Nenhum produto encontrado para o tipo: {}. Ignorando filtro.", tipoValido);
+                }
+            } else {
+                log.warn("Tipo '{}' não encontrado no banco. Ignorando filtro e usando todos os produtos.", tipoSolicitado);
+            }
+        }
 
         double retornoMaximo = produtos.stream()
                 .mapToDouble(p -> p.getTaxaAnualOferecida().doubleValue())
@@ -51,19 +86,23 @@ public class SimulacaoServiceImpl implements SimulacaoUseCases {
                 .mapToDouble(Produto::getLiquidezDias)
                 .max().orElse(1.0);
 
-        Optional<Produto> melhorProduto = produtos.stream()
-                .max(Comparator.comparingDouble(p -> calcularScore(
-                        p, requestDTO, perfil, retornoMaximo, liquidezMinima, liquidezMaxima)));
+        Optional<ProdutoComScore> melhorProdutoComScore = produtos.stream()
+                .map(p -> new ProdutoComScore(p, calcularScore(
+                        p, requestDTO, perfil, retornoMaximo, liquidezMinima, liquidezMaxima)))
+                .max(Comparator.comparingDouble(ProdutoComScore::getScore));
 
         SimulacaoResponseDTO response = new SimulacaoResponseDTO();
 
-        melhorProduto.ifPresent(produto -> {
+        melhorProdutoComScore.ifPresent(produtoComScore -> {
+            Produto produto = produtoComScore.getProduto();
+            int pontuacaoFinal = (int) Math.round(produtoComScore.getScore() * 100);
+
             ProdutoValidadoDTO produtoValidado = montarProdutoValidadoDTO(produto, perfil);
             ResultadoSimulacaoDTO resultadoSimulacao = montarResultadoSimulacaoDTO(requestDTO, produto);
 
             response.setProdutoValidado(produtoValidado);
             response.setResultadoSimulacao(resultadoSimulacao);
-            LocalDateTime dataSimulacao = LocalDateTime.now();
+            OffsetDateTime dataSimulacao = OffsetDateTime.now(ZoneOffset.UTC);
             response.setDataSimulacao(dataSimulacao);
 
             Simulacao simulacao = new Simulacao();
@@ -73,8 +112,8 @@ public class SimulacaoServiceImpl implements SimulacaoUseCases {
             simulacao.setValorFinal(resultadoSimulacao.getValorFinal());
             simulacao.setValorInvestido(requestDTO.getValor());
             simulacao.setDataSimulacao(dataSimulacao);
-            simulacao.setPontuacao(pontuacao);
-            simulacao.setPerfilRisco(perfil.name());
+            simulacao.setPontuacao(pontuacaoFinal);
+            simulacao.setPerfilRisco(perfil);
 
             simulacaoRepository.persist(simulacao);
         });
@@ -84,7 +123,7 @@ public class SimulacaoServiceImpl implements SimulacaoUseCases {
 
     @Override
     public ListagemSimulacoesResponseDTO buscarHistoricoSimulacoes(Integer pagina, Integer tamanhoPagina) {
-        List<Simulacao> simulacoes = simulacaoRepository.findAllPaged(pagina, tamanhoPagina);
+        List<HistoricoSimulacaoResponseDTO> simulacoes = simulacaoRepository.listarSimulacoesPaginado(pagina, tamanhoPagina);
         long totalRegistros = simulacaoRepository.countAll();
 
         return ListagemSimulacoesResponseDTO.builder()
@@ -100,13 +139,18 @@ public class SimulacaoServiceImpl implements SimulacaoUseCases {
         return simulacaoRepository.buscarValoresSimuladosPorProdutoEDia();
     }
 
+    @Override
+    public Object buscaSimulacoesPorCliente(Long clienteId) {
+        return simulacaoRepository.buscaSimulacoesPorCliente(clienteId);
+    }
+
     private ProdutoValidadoDTO montarProdutoValidadoDTO(Produto produto, TipoPerfilRisco perfil) {
         ProdutoValidadoDTO dto = new ProdutoValidadoDTO();
         dto.setId(produto.getId());
         dto.setNome(produto.getNome());
         dto.setTipo(produto.getTipo());
         dto.setRentabilidade(produto.getTaxaAnualOferecida().doubleValue());
-        dto.setRisco(classificarRisco(produto.getRating(), perfil));
+        dto.setRisco(produto.getRisco());
         return dto;
     }
 
@@ -118,26 +162,38 @@ public class SimulacaoServiceImpl implements SimulacaoUseCases {
         return dto;
     }
 
-    private String classificarRisco(String rating, TipoPerfilRisco perfil) {
-        double risco = normalizarRisco(rating, perfil);
-        if (risco >= 0.7) return "Baixo";
-        if (risco >= 0.4) return "Médio";
-        return "Alto";
-    }
-
     private int calcularPontuacao(SimulacaoRequestDTO requestDTO) {
-        int score = 0;
+        int scoreBase = 50;
         BigDecimal valor = requestDTO.getValor();
         int prazo = requestDTO.getPrazoMeses();
 
-        if (valor.compareTo(new BigDecimal("100000")) > 0) score += 2;
-        else if (valor.compareTo(new BigDecimal("20000")) > 0) score += 1;
-        else score -= 1;
+        // Pontuação baseada no valor investido (0 a 30 pontos)
+        if (valor.compareTo(new BigDecimal("500000")) >= 0) scoreBase += 30;
+        else if (valor.compareTo(new BigDecimal("200000")) >= 0) scoreBase += 25;
+        else if (valor.compareTo(new BigDecimal("100000")) >= 0) scoreBase += 20;
+        else if (valor.compareTo(new BigDecimal("50000")) >= 0) scoreBase += 15;
+        else if (valor.compareTo(new BigDecimal("20000")) >= 0) scoreBase += 10;
+        else if (valor.compareTo(new BigDecimal("10000")) >= 0) scoreBase += 5;
+        else scoreBase -= 10;
 
-        if (prazo <= 12) score -= 2;
-        else if (prazo > 36) score += 1;
+//        if (valor.compareTo(new BigDecimal("100000")) > 0) score += 2;
+//        else if (valor.compareTo(new BigDecimal("20000")) > 0) score += 1;
+//        else score -= 1;
 
-        return score + 3;
+//        if (prazo <= 12) score -= 2;
+//        else if (prazo > 36) score += 1;
+//
+//        return score + 3;
+
+        // Pontuação baseada no prazo (0 a 20 pontos)
+        if (prazo >= 60) scoreBase += 20;
+        else if (prazo >= 36) scoreBase += 15;
+        else if (prazo >= 24) scoreBase += 10;
+        else if (prazo >= 12) scoreBase += 5;
+        else scoreBase -= 15; // Prazos muito curtos reduzem a pontuação
+
+        // Garantir que a pontuação fique entre 0 e 100
+        return Math.max(0, Math.min(100, scoreBase));
     }
 
     private TipoPerfilRisco calcularPerfil(SimulacaoRequestDTO requestDTO) {
