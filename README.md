@@ -1,6 +1,6 @@
-# API Empréstimo Agora - [Hackathon Caixa 1ª fase]
+# API SmartInvest - [Desafio CaixaVerso]
 
-💳 **Simulador de Empréstimos** desenvolvido em **Java 17 + Quarkus**
+💰 **Simulador de Investimentos** desenvolvido em **Java 21 + Quarkus**
 
 ## ⚡ Execução Rápida
 
@@ -12,7 +12,7 @@ docker-compose up -d --build
 ---
 ### 🔹 Opção 2 — Build e Execução Manual (Modo Desenvolvimento)
 Pré-requisitos:
-- Java 17+ instalado
+- Java 21+ instalado
 - Maven Wrapper (./mvnw) ou Maven 3.9+ instalado
   Maven Wrapper (./mvnw) ou Maven 3.9+ instalado
 ```bash
@@ -29,6 +29,35 @@ Pré-requisitos:
 - **Swagger UI** → http://localhost:8080/q/swagger-ui
 - **collection** → [API Emprestimo Agora.postman_collection.json](API%20Emprestimo%20Agora.postman_collection.json)
 ---
+
+## 🔑 Autenticação JWT
+
+Este projeto utiliza **JWT (JSON Web Token)** para proteger os endpoints da API.
+
+### ⚙️ Política de Segurança
+
+- Apenas endpoints com o prefixo `/api/*` exigem autenticação via token JWT.
+
+### 🔐 Obtenção de Token JWT
+> ⚠️ O token gerado **não possui expiração**, facilitando a testabilidade pelo avalidador.
+
+
+Para testar os endpoints protegidos, utilize o seguinte endpoint:
+
+```
+GET http://localhost:8008/jwt/
+```
+
+O retorno já inclui o prefixo `Bearer`, pronto para uso no header de autenticação:
+
+```
+Authorization: Bearer <seu_token_aqui>
+```
+
+---
+
+---
+
 ## Diferenciais Implementados
 
 ### 🔒 Rate Limiting
@@ -36,23 +65,7 @@ Pré-requisitos:
 - Definido após testes de carga com JMeter para obter a taxa ideal de requests por segundo, protegendo a aplicação sem limitar demais o uso.
 - **Limites**: 200 req/s, 12.000 req/min, 17.280.000 req/hora.
 - Bloqueio temporário inteligente para abusos.
----
-### Aqui podemos observar os testes de carga após implementar o rate limit.
-![Imagem dos testes](imagens/testes-rate-limit.png)
----
----
-### O usuário é bloqueado ao ultrapassar o limite de requisições por período
-![imagem do erro](imagens/bloqueio.png)
----
----
-### Recebe erro 429 com detalhes dos limites de requisições ao usuário.
-![imagem do erro](imagens/postman.png)
----
----
-### Mensagens de erro personalizadas
-![imagem do erro](imagens/mensagem.png)
----
----
+
 ### 📁 Arquivo .env
 
 - O projeto utiliza arquivo `.env` para configuração de variáveis de ambiente
@@ -61,18 +74,14 @@ Pré-requisitos:
 - ### Testes unitários
 ---
 ### 🧠 Cache
-- Cache de produtos com invalidação automática.
-- Cache de listagens com paginação otimizada.
+- Cache de produtos
 ---
 ## 🔄 Processamento assíncrono
-- Envio de eventos para o Azure Event Hub, e
-- Persistência das métricas no Postgres local em segundo plano.
+- Persistência das métricas no SqlServer local em segundo plano.
 ---
 
 ### 📊 Endpoints Extras
 
-- Busca de produtos.
-- Busca de transação por ID.
 - Parâmetro opcional na busca paginada para valores referentes ao sistema SAC ou PRICE.
 - Parâmetro opcional de data no endpoint de telemetria.
 ---
@@ -82,10 +91,8 @@ Pré-requisitos:
 ### 🗄️ Banco de Dados
 
 - Pool otimizado (min: 2, max: 20 conexões).
-- **Multi-Database**:
-    - PostgreSQL (produção).
-    - SQL Server (integrações).
-- Backup persistente com volumes Docker.
+- **Database**:
+    - SQL Server (produção).
 
 ### ✅ Validação personalizada
 
