@@ -5,13 +5,13 @@ services:
     restart: always
     environment:
       ACCEPT_EULA: Y
-      SA_PASSWORD: ${LOCAL_DB_PASSWORD}
+      SA_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5434:1433"
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${LOCAL_DB_PASSWORD} -Q 'SELECT 1'"]
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U ${DB_USERNAME} -P ${DB_PASSWORD} -Q 'SELECT 1'"]
       interval: 5s
       timeout: 5s
       retries: 5
