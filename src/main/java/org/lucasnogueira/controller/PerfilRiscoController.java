@@ -17,6 +17,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.lucasnogueira.model.dto.PerfilRiscoResponseDto;
 import org.lucasnogueira.service.PerfilRiscoService;
 import org.lucasnogueira.service.TelemetriaService;
 import org.lucasnogueira.model.dto.SimulacaoResponseDTO;
@@ -57,7 +58,7 @@ public class PerfilRiscoController {
     @PostConstruct
     public void initMetrics() {
         // Criar meter
-        meter = openTelemetry.getMeter("investe-facil");
+        meter = openTelemetry.getMeter("smartInvest");
 
         // Histogram para duração das requisições (em segundos)
         httpServerDurationHistogram = meter
@@ -81,8 +82,8 @@ public class PerfilRiscoController {
                     long success = successRequests.get();
                     double successRate = total > 0 ? (double) success / total * 100.0 : 0.0;
                     measurement.record(successRate, Attributes.of(
-                            ENDPOINT_KEY, "/api/simulacao/processar",
-                            METHOD_KEY, "POST"
+                            ENDPOINT_KEY, "perfil-risco",
+                            METHOD_KEY, "GET"
                     ));
                 });
     }
@@ -94,11 +95,11 @@ public class PerfilRiscoController {
             description = "Recebe solicitação de simulação, valida dados, calcula SCORE, persiste no banco de dados de forma síncrona e retorna resultados"
     )
     @APIResponse(
-            responseCode = "201",
-            description = "Simulação processada com sucesso",
+            responseCode = "200",
+            description = "Perfil de risco encontrado com sucesso.",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = SimulacaoResponseDTO.class)
+                    schema = @Schema(implementation = PerfilRiscoResponseDto.class)
             )
     )
     @APIResponse(
@@ -107,7 +108,7 @@ public class PerfilRiscoController {
     )
     @APIResponse(
             responseCode = "404",
-            description = "Nenhum perfil risco para o cliente encontrado"
+            description = "Nenhum perfil de risco encontrado para o cliente informado."
     )
     @APIResponse(
             responseCode = "500",
@@ -120,9 +121,8 @@ public class PerfilRiscoController {
         String status = "500"; // Default para erro
 
         try {
-//            log.info(" [REQUISICAO][SIMULACAO] - Iniciando requisicao de simulacao: {}", requestDTO);
 
-            Object simulacao = perfilRiscoService.buscarPerfilRisco(clienteId);
+            PerfilRiscoResponseDto resultado = perfilRiscoService.buscarPerfilRisco(clienteId);
 
             // Incrementar contador de sucesso
             successRequests.incrementAndGet();
@@ -131,14 +131,9 @@ public class PerfilRiscoController {
             long durationNanos = System.nanoTime() - startTime;
             double durationSeconds = durationNanos / 1_000_000_000.0;
 
-            log.info(" [REQUISICAO][SIMULACAO] - Finalizando requisicao de simulacao em {}ms", Math.round(durationSeconds * 1000));
+            log.info("[REQUISICAO][PERFIL-RISCO] - Finalizando requisicao em {}ms", Math.round(durationSeconds * 1000));
 
-            return Response.ok(simulacao).build();
-
-        /*} catch (APIEmprestimoAgoraException exception) {
-            log.warn("[REQUISICAO][SIMULACAO] - Erro na requisicao: {}", exception.getMessage());
-            status = "400";
-            throw exception;*/
+            return Response.ok(resultado).build();
 
         } catch (Exception e) {
             log.warn("[REQUISICAO][SIMULACAO] - Erro na requisicao: {}", e.getMessage());
@@ -152,8 +147,8 @@ public class PerfilRiscoController {
 
             // Criar atributos para classificação das métricas
             Attributes attributes = Attributes.of(
-                    ENDPOINT_KEY, "/api/perfil-risco/",
-                    METHOD_KEY, "POST",
+                    ENDPOINT_KEY, "perfil-risco",
+                    METHOD_KEY, "GET",
                     STATUS_KEY, status
             );
 
@@ -164,7 +159,7 @@ public class PerfilRiscoController {
             httpServerRequestsCounter.add(1, attributes);
 
             // Registrar métricas no TelemetriaService para coleta posterior
-            telemetriaService.registrarRequisicao("/api/simulacao/perfil-risco", durationSeconds, Integer.parseInt(status));
+            telemetriaService.registrarRequisicao("perfil-risco", durationSeconds, Integer.parseInt(status));
         }
     }
 }

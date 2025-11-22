@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -84,8 +85,8 @@ public class ProdutoController {
                     long success = successRequests.get();
                     double successRate = total > 0 ? (double) success / total * 100.0 : 0.0;
                     measurement.record(successRate, Attributes.of(
-                            ENDPOINT_KEY, "/api/produtos-recomendados",
-                            METHOD_KEY, "POST"
+                            ENDPOINT_KEY, "produtos-recomendados",
+                            METHOD_KEY, "GET"
                     ));
                 });
     }
@@ -93,15 +94,19 @@ public class ProdutoController {
     @GET
     @Path("/{perfil}")
     @Operation(
-            summary = "Processar simulação de investimento",
-            description = "Recebe solicitação de simulação, valida dados, calcula SCORE, persiste no banco de dados de forma síncrona e retorna resultados"
+            summary = "Listar produtos recomendados por perfil de risco",
+            description = "Retorna uma lista de produtos financeiros recomendados com base no perfil de risco informado. "
+                    + "Perfis válidos: CONSERVADOR, MODERADO, AGRESSIVO."
     )
     @APIResponse(
-            responseCode = "201",
-            description = "Simulação processada com sucesso",
+            responseCode = "200",
+            description = "Lista de produtos recomendados retornada com sucesso",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = SimulacaoResponseDTO.class)
+                    schema = @Schema(
+                            type = SchemaType.ARRAY,
+                            implementation = ProdutoRecomendadoResponse.class
+                    )
             )
     )
     @APIResponse(
@@ -110,7 +115,7 @@ public class ProdutoController {
     )
     @APIResponse(
             responseCode = "404",
-            description = "Nenhum perfil risco para o cliente encontrado"
+            description = "Nenhum produto recomendado encontrado para o perfil informado."
     )
     @APIResponse(
             responseCode = "500",
@@ -123,7 +128,6 @@ public class ProdutoController {
         String status = "500"; // Default para erro
 
         try {
-//            log.info(" [REQUISICAO][SIMULACAO] - Iniciando requisicao de simulacao: {}", requestDTO);
 
             // Converta o perfil para enum, se necessário
             TipoPerfilRisco perfilRisco = TipoPerfilRisco.valueOf(perfil.toUpperCase());
@@ -137,17 +141,12 @@ public class ProdutoController {
             long durationNanos = System.nanoTime() - startTime;
             double durationSeconds = durationNanos / 1_000_000_000.0;
 
-            log.info(" [REQUISICAO][SIMULACAO] - Finalizando requisicao de simulacao em {}ms", Math.round(durationSeconds * 1000));
+            log.info("[REQUISICAO][PRODUTOS] - Finalizando requisicao em {}ms", Math.round(durationSeconds * 1000));
 
-            return Response.status(201).entity(produtos).build();
-
-        /*} catch (APIEmprestimoAgoraException exception) {
-            log.warn("[REQUISICAO][SIMULACAO] - Erro na requisicao: {}", exception.getMessage());
-            status = "400";
-            throw exception;*/
+            return Response.ok(produtos).build();
 
         } catch (Exception e) {
-            log.warn("[REQUISICAO][SIMULACAO] - Erro na requisicao: {}", e.getMessage());
+            log.warn("[REQUISICAO][PRODUTOS] - Erro na requisicao: {}", e.getMessage());
             status = "500";
             throw e;
 
@@ -158,8 +157,8 @@ public class ProdutoController {
 
             // Criar atributos para classificação das métricas
             Attributes attributes = Attributes.of(
-                    ENDPOINT_KEY, "/api/perfil-risco/",
-                    METHOD_KEY, "POST",
+                    ENDPOINT_KEY, "produtos-recomendados",
+                    METHOD_KEY, "GET",
                     STATUS_KEY, status
             );
 
@@ -170,7 +169,7 @@ public class ProdutoController {
             httpServerRequestsCounter.add(1, attributes);
 
             // Registrar métricas no TelemetriaService para coleta posterior
-            telemetriaService.registrarRequisicao("/api/simulacao/perfil-risco", durationSeconds, Integer.parseInt(status));
+            telemetriaService.registrarRequisicao("produtos-recomendados", durationSeconds, Integer.parseInt(status));
         }
     }
 }

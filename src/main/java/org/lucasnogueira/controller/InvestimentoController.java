@@ -13,14 +13,17 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.lucasnogueira.model.dto.InvestimentoClienteResponseDTO;
 import org.lucasnogueira.service.SimulacaoService;
 import org.lucasnogueira.service.TelemetriaService;
 import org.lucasnogueira.model.dto.SimulacaoResponseDTO;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -57,7 +60,7 @@ public class InvestimentoController {
     @PostConstruct
     public void initMetrics() {
         // Criar meter
-        meter = openTelemetry.getMeter("investe-facil");
+        meter = openTelemetry.getMeter("smartInvest");
 
         // Histogram para duração das requisições (em segundos)
         httpServerDurationHistogram = meter
@@ -81,8 +84,8 @@ public class InvestimentoController {
                     long success = successRequests.get();
                     double successRate = total > 0 ? (double) success / total * 100.0 : 0.0;
                     measurement.record(successRate, Attributes.of(
-                            ENDPOINT_KEY, "/api/simulacao/processar",
-                            METHOD_KEY, "POST"
+                            ENDPOINT_KEY, "investimentos",
+                            METHOD_KEY, "GET"
                     ));
                 });
     }
@@ -90,15 +93,19 @@ public class InvestimentoController {
     @GET
     @Path("/{clienteId}")
     @Operation(
-            summary = "Processar simulação de investimento",
-            description = "Recebe solicitação de simulação, valida dados, calcula SCORE, persiste no banco de dados de forma síncrona e retorna resultados"
+            summary = "Consultar histórico de investimentos do cliente",
+
+            description = "Busca todas as simulações de investimento realizadas pelo cliente identificado pelo parâmetro `clienteId`. "
     )
     @APIResponse(
             responseCode = "200",
-            description = "Simulação processada com sucesso",
+            description = "Lista de investimentos retornada com sucesso.",
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = SimulacaoResponseDTO.class)
+                    schema = @Schema(
+                            type = SchemaType.ARRAY,
+                            implementation = InvestimentoClienteResponseDTO.class
+                    )
             )
     )
     @APIResponse(
@@ -107,7 +114,7 @@ public class InvestimentoController {
     )
     @APIResponse(
             responseCode = "404",
-            description = "Nenhum perfil risco para o cliente encontrado"
+            description = "Nenhum histórico de investimento encontrado para o cliente informado"
     )
     @APIResponse(
             responseCode = "500",
@@ -120,9 +127,8 @@ public class InvestimentoController {
         String status = "500"; // Default para erro
 
         try {
-//            log.info(" [REQUISICAO][SIMULACAO] - Iniciando requisicao de simulacao: {}", requestDTO);
 
-            Object produtos = simulacaoService.buscaSimulacoesPorCliente(clienteId);
+            List<InvestimentoClienteResponseDTO> resultado = simulacaoService.buscaSimulacoesPorCliente(clienteId);
 
             // Incrementar contador de sucesso
             successRequests.incrementAndGet();
@@ -131,17 +137,12 @@ public class InvestimentoController {
             long durationNanos = System.nanoTime() - startTime;
             double durationSeconds = durationNanos / 1_000_000_000.0;
 
-            log.info(" [REQUISICAO][SIMULACAO] - Finalizando requisicao de simulacao em {}ms", Math.round(durationSeconds * 1000));
+            log.info(" [REQUISICAO][INVESTIMENTOS] - Finalizando requisicao em {}ms", Math.round(durationSeconds * 1000));
 
-            return Response.status(200).entity(produtos).build();
-
-        /*} catch (APIEmprestimoAgoraException exception) {
-            log.warn("[REQUISICAO][SIMULACAO] - Erro na requisicao: {}", exception.getMessage());
-            status = "400";
-            throw exception;*/
+            return Response.status(200).entity(resultado).build();
 
         } catch (Exception e) {
-            log.warn("[REQUISICAO][SIMULACAO] - Erro na requisicao: {}", e.getMessage());
+            log.warn("[REQUISICAO][INVESTIMENTOS] - Erro na requisicao: {}", e.getMessage());
             status = "500";
             throw e;
 
@@ -152,8 +153,8 @@ public class InvestimentoController {
 
             // Criar atributos para classificação das métricas
             Attributes attributes = Attributes.of(
-                    ENDPOINT_KEY, "/api/perfil-risco/",
-                    METHOD_KEY, "POST",
+                    ENDPOINT_KEY, "investimentos",
+                    METHOD_KEY, "GET",
                     STATUS_KEY, status
             );
 
@@ -164,7 +165,7 @@ public class InvestimentoController {
             httpServerRequestsCounter.add(1, attributes);
 
             // Registrar métricas no TelemetriaService para coleta posterior
-            telemetriaService.registrarRequisicao("/api/simulacao/perfil-risco", durationSeconds, Integer.parseInt(status));
+            telemetriaService.registrarRequisicao("investimentos", durationSeconds, Integer.parseInt(status));
         }
     }
 }

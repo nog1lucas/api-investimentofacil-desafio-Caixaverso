@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -269,9 +270,13 @@ public class SimulacaoController {
     @APIResponse(
             responseCode = "200",
             description = "Simulação encontrada com sucesso",
+
             content = @Content(
                     mediaType = MediaType.APPLICATION_JSON,
-                    schema = @Schema(implementation = SimulacaoResponseDTO.class)
+                    schema = @Schema(
+                            type = SchemaType.ARRAY,
+                            implementation = ValoresSimuladosPorProdutoDiaDTO.class
+                    )
             )
     )
     @APIResponse(
@@ -309,19 +314,19 @@ public class SimulacaoController {
                 }
             }
 
-            log.info("[REQUISICAO][PRODUTO_DIA] - Consultando simulações para data: {}", dataReferencia);
+            log.info("[REQUISICAO][PRODUTO-DIA] - Consultando simulações para data: {}", dataReferencia);
 
             List<ValoresSimuladosPorProdutoDiaDTO> simulacao = simulacaoService.buscarValoresSimuladosPorProdutoEDia(dataReferencia);
 
             status = "200";
 
-            log.info("[REQUISICAO][PRODUTO_DIA] - Encontradas {} simulações agrupadas por produto para a data: {}",
+            log.info("[REQUISICAO][PRODUTO-DIA] - Encontradas {} simulações agrupadas por produto para a data: {}",
                     simulacao.size(), dataReferencia);
 
             return Response.ok(simulacao).build();
 
         } catch (Exception e) {
-            log.error("[REQUISICAO][PRODUTO_DIA] - Erro ao buscar simulações: {}", e.getMessage());
+            log.error("[REQUISICAO][PRODUTO-DIA] - Erro ao buscar simulações: {}", e.getMessage());
             status = "500";
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(new ErrorResponse("INTERNAL_ERROR", "Erro interno do servidor"))

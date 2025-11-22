@@ -91,10 +91,10 @@ public class SimulacaoRepository implements PanacheRepository<Simulacao> {
         );
     }
 
-    public Object buscaSimulacoesPorCliente(Long clienteId) {
+    public List<Object[]> buscaSimulacoesPorCliente(Long clienteId) {
        return entityManager
                 .createQuery(
-                        "SELECT s.id, p.tipo, s.valorFinal, p.taxaAnualOferecida, p.risco " +
+                        "SELECT s.id, p.tipo, s.valorFinal, p.taxaAnualOferecida, s.dataSimulacao " +
                                 "FROM Simulacao s " +
                                 "JOIN Produto p ON s.codigoProduto = p.id " +
                                 "WHERE s.codigoCliente = :clienteId " +
@@ -104,4 +104,5 @@ public class SimulacaoRepository implements PanacheRepository<Simulacao> {
                 .setParameter("clienteId", clienteId)
                 .getResultList();
     }
+
 }

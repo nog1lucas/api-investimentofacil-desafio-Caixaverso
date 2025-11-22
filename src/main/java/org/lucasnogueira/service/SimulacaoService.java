@@ -4,13 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.lucasnogueira.model.dto.SimulacaoRequestDTO;
-import org.lucasnogueira.model.dto.ProdutoValidadoDTO;
-import org.lucasnogueira.model.dto.ResultadoSimulacaoDTO;
-import org.lucasnogueira.model.dto.HistoricoSimulacaoResponseDTO;
-import org.lucasnogueira.model.dto.ListagemSimulacoesResponseDTO;
-import org.lucasnogueira.model.dto.SimulacaoResponseDTO;
-import org.lucasnogueira.model.dto.ValoresSimuladosPorProdutoDiaDTO;
+import org.lucasnogueira.model.dto.*;
 
 import org.lucasnogueira.model.ProdutoComScore;
 import org.lucasnogueira.model.entities.Produto;
@@ -25,6 +19,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ApplicationScoped
@@ -77,8 +72,18 @@ public class SimulacaoService {
         return simulacaoRepository.buscarValoresSimuladosPorProdutoEDia(dataReferencia);
     }
 
-    public Object buscaSimulacoesPorCliente(Long clienteId) {
-        return simulacaoRepository.buscaSimulacoesPorCliente(clienteId);
+    public List<InvestimentoClienteResponseDTO> buscaSimulacoesPorCliente(Long clienteId) {
+        List<Object[]> resultados = simulacaoRepository.buscaSimulacoesPorCliente(clienteId);
+
+        return resultados.stream()
+                .map(row -> new InvestimentoClienteResponseDTO(
+                        ((Number) row[0]).longValue(),
+                        (String) row[1],
+                        (BigDecimal) row[2],
+                        ((BigDecimal) row[3]).setScale(2, RoundingMode.HALF_UP),
+                        (OffsetDateTime) row[4]
+                ))
+                .collect(Collectors.toList());
     }
 
     private List<Produto> obterProdutosFiltrados(SimulacaoRequestDTO requestDTO) {
