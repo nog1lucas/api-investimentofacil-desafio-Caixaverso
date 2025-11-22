@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Serviço responsável pelo cache do método findAll() da entidade Produto
+ * Serviço responsável pelo cache da entidade Produto
  * com estratégia de renovação sob demanda (expire-after-access)
  */
 @ApplicationScoped

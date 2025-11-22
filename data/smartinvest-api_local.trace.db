@@ -966,3 +966,285 @@ INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_
 2025-11-21 20:20:11.747054-03:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
 INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Imobiliário', 0, 'Fundos', 0.08, 30, 'Muito Baixo') [42102-240]
+2025-11-21 21:15:13.358945-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Schema "SYS" not found; SQL statement:
+SELECT compatibility_level FROM sys.databases where name = db_name(); [90079-240]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:644)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1742)
+	at org.h2.command.Parser.readTableReference(Parser.java:2252)
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2705)
+	at org.h2.command.Parser.parseSelect(Parser.java:2813)
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2695)
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2550)
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2529)
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2522)
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2515)
+	at org.h2.command.Parser.parseQuery(Parser.java:2482)
+	at org.h2.command.Parser.parsePrepared(Parser.java:613)
+	at org.h2.command.Parser.parse(Parser.java:584)
+	at org.h2.command.Parser.parse(Parser.java:559)
+	at org.h2.command.Parser.prepareCommand(Parser.java:487)
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:647)
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:563)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1160)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
+	at org.hibernate.dialect.SQLServerDialect.getCompatibilityLevel(SQLServerDialect.java:224)
+	at org.hibernate.dialect.SQLServerDialect.staticDetermineDatabaseVersion(SQLServerDialect.java:210)
+	at org.hibernate.dialect.SQLServerDialect.determineDatabaseVersion(SQLServerDialect.java:205)
+	at io.quarkus.hibernate.orm.runtime.service.QuarkusRuntimeInitDialectFactory.retrieveDbVersion(QuarkusRuntimeInitDialectFactory.java:109)
+	at io.quarkus.hibernate.orm.runtime.service.QuarkusRuntimeInitDialectFactory.buildDialect(QuarkusRuntimeInitDialectFactory.java:54)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$1.execute(JdbcEnvironmentInitiator.java:388)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$1.execute(JdbcEnvironmentInitiator.java:356)
+	at org.hibernate.jdbc.WorkExecutor.executeReturningWork(WorkExecutor.java:56)
+	at org.hibernate.jdbc.AbstractReturningWork.accept(AbstractReturningWork.java:32)
+	at org.hibernate.resource.transaction.backend.jta.internal.JtaIsolationDelegate.doTheWork(JtaIsolationDelegate.java:202)
+	at org.hibernate.resource.transaction.backend.jta.internal.JtaIsolationDelegate.lambda$delegateWork$3(JtaIsolationDelegate.java:76)
+	at org.hibernate.resource.transaction.backend.jta.internal.JtaIsolationDelegate.doInSuspendedTransaction(JtaIsolationDelegate.java:112)
+	at org.hibernate.resource.transaction.backend.jta.internal.JtaIsolationDelegate.delegateWork(JtaIsolationDelegate.java:73)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:355)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironment(JdbcEnvironmentInitiator.java:149)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:127)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:82)
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:133)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:262)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:237)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:214)
+	at org.hibernate.service.ServiceRegistry.requireService(ServiceRegistry.java:66)
+	at org.hibernate.engine.jdbc.internal.JdbcServicesImpl.configure(JdbcServicesImpl.java:50)
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.configureService(StandardServiceRegistryImpl.java:139)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:246)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:214)
+	at org.hibernate.service.ServiceRegistry.requireService(ServiceRegistry.java:66)
+	at org.hibernate.boot.internal.SessionFactoryOptionsBuilder.<init>(SessionFactoryOptionsBuilder.java:272)
+	at io.quarkus.hibernate.orm.runtime.recording.PrevalidatedQuarkusMetadata.buildSessionFactoryOptionsBuilder(PrevalidatedQuarkusMetadata.java:70)
+	at io.quarkus.hibernate.orm.runtime.boot.FastBootEntityManagerFactoryBuilder.build(FastBootEntityManagerFactoryBuilder.java:94)
+	at io.quarkus.hibernate.orm.runtime.FastBootHibernatePersistenceProvider.createEntityManagerFactory(FastBootHibernatePersistenceProvider.java:88)
+	at jakarta.persistence.Persistence.createEntityManagerFactory(Persistence.java:90)
+	at io.quarkus.hibernate.orm.runtime.JPAConfig$LazyPersistenceUnit.get(JPAConfig.java:178)
+	at io.quarkus.hibernate.orm.runtime.JPAConfig$1.run(JPAConfig.java:65)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2025-11-21 21:15:14.201446-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table PRODUTO (\000d\000a        IC_TIPO_PERFIL_RISCO smallint check ((IC_TIPO_PERFIL_RISCO between 0 and 2)),\000d\000a        NU_LIQUIDEZ_DIAS int,\000d\000a        PC_TAXA_ANUAL_OFERECIDA numeric(8,5),\000d\000a        CO_PRODUTO bigint [*]identity not null,\000d\000a        IC_TIPO_PRODUTO varchar(20),\000d\000a        NO_RISCO varchar(20),\000d\000a        NO_PRODUTO varchar(100),\000d\000a        primary key (CO_PRODUTO)\000d\000a    )"; expected "ARRAY, INVISIBLE, VISIBLE, NOT NULL, DEFAULT, GENERATED, ON UPDATE, NOT NULL, DEFAULT ON NULL, SEQUENCE, SELECTIVITY, COMMENT, CONSTRAINT, COMMENT, PRIMARY KEY, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+
+    create table PRODUTO (
+        IC_TIPO_PERFIL_RISCO smallint check ((IC_TIPO_PERFIL_RISCO between 0 and 2)),
+        NU_LIQUIDEZ_DIAS int,
+        PC_TAXA_ANUAL_OFERECIDA numeric(8,5),
+        CO_PRODUTO bigint identity not null,
+        IC_TIPO_PRODUTO varchar(20),
+        NO_RISCO varchar(20),
+        NO_PRODUTO varchar(100),
+        primary key (CO_PRODUTO)
+    ) [42001-240]
+2025-11-21 21:15:14.208445-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table SIMULACAO (\000d\000a        CO_ClIENTE int,\000d\000a        IC_TIPO_PERFIL_RISCO smallint check ((IC_TIPO_PERFIL_RISCO between 0 and 2)),\000d\000a        NU_PONTUACAO int,\000d\000a        NU_PRAZO_MESES int,\000d\000a        PC_RENTABILIDADE_EFETIVA numeric(5,4),\000d\000a        VR_FINAL numeric(18,2),\000d\000a        VR_INVESTIDO numeric(18,2),\000d\000a        CO_PRODUTO bigint,\000d\000a        CO_SIMULACAO bigint [*]identity not null,\000d\000a        TS_CRIACAO_SIMULACAO datetimeoffset(7),\000d\000a        NO_RISCO varchar(20),\000d\000a        primary key (CO_SIMULACAO)\000d\000a    )"; expected "ARRAY, INVISIBLE, VISIBLE, NOT NULL, DEFAULT, GENERATED, ON UPDATE, NOT NULL, DEFAULT ON NULL, SEQUENCE, SELECTIVITY, COMMENT, CONSTRAINT, COMMENT, PRIMARY KEY, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+
+    create table SIMULACAO (
+        CO_ClIENTE int,
+        IC_TIPO_PERFIL_RISCO smallint check ((IC_TIPO_PERFIL_RISCO between 0 and 2)),
+        NU_PONTUACAO int,
+        NU_PRAZO_MESES int,
+        PC_RENTABILIDADE_EFETIVA numeric(5,4),
+        VR_FINAL numeric(18,2),
+        VR_INVESTIDO numeric(18,2),
+        CO_PRODUTO bigint,
+        CO_SIMULACAO bigint identity not null,
+        TS_CRIACAO_SIMULACAO datetimeoffset(7),
+        NO_RISCO varchar(20),
+        primary key (CO_SIMULACAO)
+    ) [42001-240]
+2025-11-21 21:15:14.213449-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table TELEMETRIA (\000d\000a        DT_REFERENCIA date,\000d\000a        TEMPO_RESPOSTA_MS numeric(38,2),\000d\000a        CO_TELEMETRIA bigint [*]identity not null,\000d\000a        QT_CHAMADAS bigint,\000d\000a        QT_CHAMADAS_ERRO bigint,\000d\000a        QT_CHAMADAS_SUCESSO bigint,\000d\000a        TS_ATUALIZACAO datetime2(7),\000d\000a        TS_CRIACAO datetime2(7),\000d\000a        NO_SERVICO varchar(100),\000d\000a        primary key (CO_TELEMETRIA)\000d\000a    )"; expected "ARRAY, INVISIBLE, VISIBLE, NOT NULL, DEFAULT, GENERATED, ON UPDATE, NOT NULL, DEFAULT ON NULL, SEQUENCE, SELECTIVITY, COMMENT, CONSTRAINT, COMMENT, PRIMARY KEY, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+
+    create table TELEMETRIA (
+        DT_REFERENCIA date,
+        TEMPO_RESPOSTA_MS numeric(38,2),
+        CO_TELEMETRIA bigint identity not null,
+        QT_CHAMADAS bigint,
+        QT_CHAMADAS_ERRO bigint,
+        QT_CHAMADAS_SUCESSO bigint,
+        TS_ATUALIZACAO datetime2(7),
+        TS_CRIACAO datetime2(7),
+        NO_SERVICO varchar(100),
+        primary key (CO_TELEMETRIA)
+    ) [42001-240]
+2025-11-21 21:15:14.267865-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('CDB Caixa', 0, 'CDB', 0.13, 1, 'Baixo') [42102-240]
+2025-11-21 21:15:14.270867-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Agressivo XPTO', 2, 'Fundos', 0.18, 30, 'Alto') [42102-240]
+2025-11-21 21:15:14.273867-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Tesouro Selic', 0, 'Tesouro Direto', 0.06, 1, 'Muito Baixo') [42102-240]
+2025-11-21 21:15:14.276865-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Tech Growth', 2, 'Fundos', 0.22, 60, 'Muito Alto') [42102-240]
+2025-11-21 21:15:14.278866-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Ações BlueChip', 2, 'Ações', 0.25, 1, 'Muito Alto') [42102-240]
+2025-11-21 21:15:14.286866-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('LCA Multimercado', 1, 'LCA', 0.12, 90, 'Medio') [42102-240]
+2025-11-21 21:15:14.288866-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('LCI Multimercado', 1, 'LCI', 0.13, 90, 'Medio') [42102-240]
+2025-11-21 21:15:14.291867-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Viver de Renda', 2, 'Fundos', 0.17, 45, 'Alto') [42102-240]
+2025-11-21 21:15:14.293865-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('CDB Facil', 0, 'CDB', 0.11, 1, 'Baixo') [42102-240]
+2025-11-21 21:15:14.296865-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Imobiliário', 0, 'Fundos', 0.08, 30, 'Muito Baixo') [42102-240]
+2025-11-21 21:56:42.396090-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Schema "SYS" not found; SQL statement:
+SELECT compatibility_level FROM sys.databases where name = db_name(); [90079-240]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:644)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.command.Parser.readTablePrimary(Parser.java:1742)
+	at org.h2.command.Parser.readTableReference(Parser.java:2252)
+	at org.h2.command.Parser.parseSelectFromPart(Parser.java:2705)
+	at org.h2.command.Parser.parseSelect(Parser.java:2813)
+	at org.h2.command.Parser.parseQueryPrimary(Parser.java:2695)
+	at org.h2.command.Parser.parseQueryTerm(Parser.java:2550)
+	at org.h2.command.Parser.parseQueryExpressionBody(Parser.java:2529)
+	at org.h2.command.Parser.parseQueryExpressionBodyAndEndOfQuery(Parser.java:2522)
+	at org.h2.command.Parser.parseQueryExpression(Parser.java:2515)
+	at org.h2.command.Parser.parseQuery(Parser.java:2482)
+	at org.h2.command.Parser.parsePrepared(Parser.java:613)
+	at org.h2.command.Parser.parse(Parser.java:584)
+	at org.h2.command.Parser.parse(Parser.java:559)
+	at org.h2.command.Parser.prepareCommand(Parser.java:487)
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:647)
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:563)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1160)
+	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
+	at org.hibernate.dialect.SQLServerDialect.getCompatibilityLevel(SQLServerDialect.java:224)
+	at org.hibernate.dialect.SQLServerDialect.staticDetermineDatabaseVersion(SQLServerDialect.java:210)
+	at org.hibernate.dialect.SQLServerDialect.determineDatabaseVersion(SQLServerDialect.java:205)
+	at io.quarkus.hibernate.orm.runtime.service.QuarkusRuntimeInitDialectFactory.retrieveDbVersion(QuarkusRuntimeInitDialectFactory.java:109)
+	at io.quarkus.hibernate.orm.runtime.service.QuarkusRuntimeInitDialectFactory.buildDialect(QuarkusRuntimeInitDialectFactory.java:54)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$1.execute(JdbcEnvironmentInitiator.java:388)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$1.execute(JdbcEnvironmentInitiator.java:356)
+	at org.hibernate.jdbc.WorkExecutor.executeReturningWork(WorkExecutor.java:56)
+	at org.hibernate.jdbc.AbstractReturningWork.accept(AbstractReturningWork.java:32)
+	at org.hibernate.resource.transaction.backend.jta.internal.JtaIsolationDelegate.doTheWork(JtaIsolationDelegate.java:202)
+	at org.hibernate.resource.transaction.backend.jta.internal.JtaIsolationDelegate.lambda$delegateWork$3(JtaIsolationDelegate.java:76)
+	at org.hibernate.resource.transaction.backend.jta.internal.JtaIsolationDelegate.doInSuspendedTransaction(JtaIsolationDelegate.java:112)
+	at org.hibernate.resource.transaction.backend.jta.internal.JtaIsolationDelegate.delegateWork(JtaIsolationDelegate.java:73)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironmentUsingJdbcMetadata(JdbcEnvironmentInitiator.java:355)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.getJdbcEnvironment(JdbcEnvironmentInitiator.java:149)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:127)
+	at org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator.initiateService(JdbcEnvironmentInitiator.java:82)
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.initiateService(StandardServiceRegistryImpl.java:133)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.createService(AbstractServiceRegistryImpl.java:262)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:237)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:214)
+	at org.hibernate.service.ServiceRegistry.requireService(ServiceRegistry.java:66)
+	at org.hibernate.engine.jdbc.internal.JdbcServicesImpl.configure(JdbcServicesImpl.java:50)
+	at org.hibernate.boot.registry.internal.StandardServiceRegistryImpl.configureService(StandardServiceRegistryImpl.java:139)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.initializeService(AbstractServiceRegistryImpl.java:246)
+	at org.hibernate.service.internal.AbstractServiceRegistryImpl.getService(AbstractServiceRegistryImpl.java:214)
+	at org.hibernate.service.ServiceRegistry.requireService(ServiceRegistry.java:66)
+	at org.hibernate.boot.internal.SessionFactoryOptionsBuilder.<init>(SessionFactoryOptionsBuilder.java:272)
+	at io.quarkus.hibernate.orm.runtime.recording.PrevalidatedQuarkusMetadata.buildSessionFactoryOptionsBuilder(PrevalidatedQuarkusMetadata.java:70)
+	at io.quarkus.hibernate.orm.runtime.boot.FastBootEntityManagerFactoryBuilder.build(FastBootEntityManagerFactoryBuilder.java:94)
+	at io.quarkus.hibernate.orm.runtime.FastBootHibernatePersistenceProvider.createEntityManagerFactory(FastBootHibernatePersistenceProvider.java:88)
+	at jakarta.persistence.Persistence.createEntityManagerFactory(Persistence.java:90)
+	at io.quarkus.hibernate.orm.runtime.JPAConfig$LazyPersistenceUnit.get(JPAConfig.java:178)
+	at io.quarkus.hibernate.orm.runtime.JPAConfig$1.run(JPAConfig.java:65)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2025-11-21 21:56:43.460481-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+
+    drop table P [42102-240]
+2025-11-21 21:56:43.464470-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "SIMULACAO" not found; SQL statement:
+
+    drop table SIM [42102-240]
+2025-11-21 21:56:43.468983-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "TELEMETRIA" not found; SQL statement:
+
+    drop table TELE [42102-240]
+2025-11-21 21:56:43.485005-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table PRODUTO (\000d\000a        IC_TIPO_PERFIL_RISCO smallint check ((IC_TIPO_PERFIL_RISCO between 0 and 2)),\000d\000a        NU_LIQUIDEZ_DIAS int,\000d\000a        PC_TAXA_ANUAL_OFERECIDA numeric(8,5),\000d\000a        CO_PRODUTO bigint [*]identity not null,\000d\000a        IC_TIPO_PRODUTO varchar(20),\000d\000a        NO_RISCO varchar(20),\000d\000a        NO_PRODUTO varchar(100),\000d\000a        primary key (CO_PRODUTO)\000d\000a    )"; expected "ARRAY, INVISIBLE, VISIBLE, NOT NULL, DEFAULT, GENERATED, ON UPDATE, NOT NULL, DEFAULT ON NULL, SEQUENCE, SELECTIVITY, COMMENT, CONSTRAINT, COMMENT, PRIMARY KEY, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+
+    create table PRODUTO (
+        IC_TIPO_PERFIL_RISCO smallint check ((IC_TIPO_PERFIL_RISCO between 0 and 2)),
+        NU_LIQUIDEZ_DIAS int,
+        PC_TAXA_ANUAL_OFERECIDA numeric(8,5),
+        CO_PRODUTO bigint identity not null,
+        IC_TIPO_PRODUTO varchar(20),
+        NO_RISCO varchar(20),
+        NO_PRODUTO varchar(100),
+        primary key (CO_PRODUTO)
+    ) [42001-240]
+2025-11-21 21:56:43.490525-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table SIMULACAO (\000d\000a        CO_ClIENTE int,\000d\000a        IC_TIPO_PERFIL_RISCO smallint check ((IC_TIPO_PERFIL_RISCO between 0 and 2)),\000d\000a        NU_PONTUACAO int,\000d\000a        NU_PRAZO_MESES int,\000d\000a        PC_RENTABILIDADE_EFETIVA numeric(5,4),\000d\000a        VR_FINAL numeric(18,2),\000d\000a        VR_INVESTIDO numeric(18,2),\000d\000a        CO_PRODUTO bigint,\000d\000a        CO_SIMULACAO bigint [*]identity not null,\000d\000a        TS_CRIACAO_SIMULACAO datetimeoffset(7),\000d\000a        NO_RISCO varchar(20),\000d\000a        primary key (CO_SIMULACAO)\000d\000a    )"; expected "ARRAY, INVISIBLE, VISIBLE, NOT NULL, DEFAULT, GENERATED, ON UPDATE, NOT NULL, DEFAULT ON NULL, SEQUENCE, SELECTIVITY, COMMENT, CONSTRAINT, COMMENT, PRIMARY KEY, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+
+    create table SIMULACAO (
+        CO_ClIENTE int,
+        IC_TIPO_PERFIL_RISCO smallint check ((IC_TIPO_PERFIL_RISCO between 0 and 2)),
+        NU_PONTUACAO int,
+        NU_PRAZO_MESES int,
+        PC_RENTABILIDADE_EFETIVA numeric(5,4),
+        VR_FINAL numeric(18,2),
+        VR_INVESTIDO numeric(18,2),
+        CO_PRODUTO bigint,
+        CO_SIMULACAO bigint identity not null,
+        TS_CRIACAO_SIMULACAO datetimeoffset(7),
+        NO_RISCO varchar(20),
+        primary key (CO_SIMULACAO)
+    ) [42001-240]
+2025-11-21 21:56:43.494523-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "\000d\000a    create table TELEMETRIA (\000d\000a        DT_REFERENCIA date,\000d\000a        TEMPO_RESPOSTA_MS numeric(38,2),\000d\000a        CO_TELEMETRIA bigint [*]identity not null,\000d\000a        QT_CHAMADAS bigint,\000d\000a        QT_CHAMADAS_ERRO bigint,\000d\000a        QT_CHAMADAS_SUCESSO bigint,\000d\000a        TS_ATUALIZACAO datetime2(7),\000d\000a        TS_CRIACAO datetime2(7),\000d\000a        NO_SERVICO varchar(100),\000d\000a        primary key (CO_TELEMETRIA)\000d\000a    )"; expected "ARRAY, INVISIBLE, VISIBLE, NOT NULL, DEFAULT, GENERATED, ON UPDATE, NOT NULL, DEFAULT ON NULL, SEQUENCE, SELECTIVITY, COMMENT, CONSTRAINT, COMMENT, PRIMARY KEY, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+
+    create table TELEMETRIA (
+        DT_REFERENCIA date,
+        TEMPO_RESPOSTA_MS numeric(38,2),
+        CO_TELEMETRIA bigint identity not null,
+        QT_CHAMADAS bigint,
+        QT_CHAMADAS_ERRO bigint,
+        QT_CHAMADAS_SUCESSO bigint,
+        TS_ATUALIZACAO datetime2(7),
+        TS_CRIACAO datetime2(7),
+        NO_SERVICO varchar(100),
+        primary key (CO_TELEMETRIA)
+    ) [42001-240]
+2025-11-21 21:56:43.639970-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('CDB Caixa', 0, 'CDB', 0.13, 1, 'Baixo') [42102-240]
+2025-11-21 21:56:43.643994-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Agressivo XPTO', 2, 'Fundos', 0.18, 30, 'Alto') [42102-240]
+2025-11-21 21:56:43.646969-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Tesouro Selic', 0, 'Tesouro Direto', 0.06, 1, 'Muito Baixo') [42102-240]
+2025-11-21 21:56:43.648968-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Tech Growth', 2, 'Fundos', 0.22, 60, 'Muito Alto') [42102-240]
+2025-11-21 21:56:43.651969-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Ações BlueChip', 2, 'Ações', 0.25, 1, 'Muito Alto') [42102-240]
+2025-11-21 21:56:43.659186-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('LCA Multimercado', 1, 'LCA', 0.12, 90, 'Medio') [42102-240]
+2025-11-21 21:56:43.661200-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('LCI Multimercado', 1, 'LCI', 0.13, 90, 'Medio') [42102-240]
+2025-11-21 21:56:43.664184-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Viver de Renda', 2, 'Fundos', 0.17, 45, 'Alto') [42102-240]
+2025-11-21 21:56:43.667184-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('CDB Facil', 0, 'CDB', 0.11, 1, 'Baixo') [42102-240]
+2025-11-21 21:56:43.669185-03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUTO" not found; SQL statement:
+INSERT INTO PRODUTO (NO_PRODUTO, IC_TIPO_PERFIL_RISCO, IC_TIPO_PRODUTO, PC_TAXA_ANUAL_OFERECIDA, NU_LIQUIDEZ_DIAS, NO_RISCO) VALUES ('Fundo Imobiliário', 0, 'Fundos', 0.08, 30, 'Muito Baixo') [42102-240]

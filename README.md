@@ -27,7 +27,6 @@ Pré-requisitos:
 
 - **API** → http://localhost:8080
 - **Swagger UI** → http://localhost:8080/q/swagger-ui
-- **collection** → [API Emprestimo Agora.postman_collection.json](API%20Emprestimo%20Agora.postman_collection.json)
 ---
 
 ## 🔑 Autenticação JWT

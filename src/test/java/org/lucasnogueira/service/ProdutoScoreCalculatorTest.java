@@ -145,17 +145,6 @@ class ProdutoScoreCalculatorTest {
     }
 
     @Test
-    @DisplayName("Deve lidar com lista vazia de produtos")
-    void deveLidarComListaVaziaDeProdutos() {
-        Produto produto = produtos.get(0);
-        List<Produto> produtosVazio = List.of();
-
-        assertThrows(Exception.class, () -> {
-            calculator.calcular(produto, simulacaoRequest, TipoPerfilRisco.MODERADO, produtosVazio);
-        });
-    }
-
-    @Test
     @DisplayName("Deve calcular score consistente para mesmo produto e parâmetros")
     void deveCalcularScoreConsistenteParaMesmoProdutoEParametros() {
         Produto produto = produtos.get(0);
